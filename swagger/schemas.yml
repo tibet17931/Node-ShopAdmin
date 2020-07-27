@@ -1,0 +1,29 @@
+BodySchema:
+  type: object
+  example:
+    attrs: []
+Success:
+  type: object
+  required:
+    - code
+    - message
+  properties:
+    code:
+      type: number
+      description: HTTP reponse code
+    message:
+      type: string
+      description: Success message
+Error:
+  type: object
+  required:
+    - code
+    - message
+  properties:
+    code:
+      type: number
+      example: 400
+      description: HTTP reponse code
+    message:
+      type: string
+      description: Error message
