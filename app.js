@@ -14,7 +14,7 @@ const PORT = process.env.PORT
 // คำสั่งเชื่อม MongoDB Atlas
 var mongo_uri = "mongodb+srv://admin:9B70df4910@cluster0.8hmsb.mongodb.net/ShopAdmin?retryWrites=true&w=majority";
 mongoose.Promise = global.Promise;
-mongoose.connect(mongo_uri, { useNewUrlParser: true, useUnifiedTopology: true }).then(
+mongoose.connect(mongo_uri, { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true, useUnifiedTopology: true }).then(
     () => {
         clog.info("[success] task 2 : connected to the database ");
     },

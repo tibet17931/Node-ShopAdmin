@@ -1,15 +1,33 @@
 const mongoose = require('mongoose')
+const uniqueValidator = require('mongoose-unique-validator');
 const Schema = mongoose.Schema;
 const ObjectId = Schema.ObjectId;
 
 const userSchema = new Schema({
     // userId: ObjectId,
-    username: { type: String, required: true },
-    password: { type: String, required: true },
+    username: { type: String, required: true, unique: true },
+    password_hash: { type: String, required: true },
+    password_salt: { type: String, required: true },
     firstname: { type: String, required: true },
     lastname: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    birthday: { type: Date, required: true },
+    phone: {
+        type: String,
+        validate: {
+            validator: function (v) {
+                return /\d{3}-\d{3}-\d{4}/.test(v);
+            },
+            message: props => `${props.value} is not a valid phone number!`
+        },
+        required: [true, 'User phone number required'],
+        unique: true
+    },
+    age: { type: Number, min: 15, max: 65 },
     update_date: { type: Date, default: Date.now }
 });
+
+userSchema.plugin(uniqueValidator);
 
 const USER = mongoose.model('USER', userSchema);
 
@@ -22,23 +40,21 @@ exports.findUserById = async (id) => {
     }
 }
 
-    // let saveUser = new User({ username: "admin", password: "9B70df49101", firstname: "Tibet", lastname: "Pedrod", })
-    // saveUser.save(function (err, user) {
-    //     if (err) return console.error(err);
-    //     console.log(user.username + " saved to User collection.");
-    // });
+exports.registerModel = async (obj) => {
+    try {
+        let saveUser = new USER(obj)
+        let result = await saveUser.save()
+        return result
+    } catch (error) {
+        throw error
+    }
+}
 
-    // User.findById('5f1e42c93641fb41a07864ef', function (err, result) {
-    //     if (err) {
-    //         res.send(err);
-    //     } else {
-    //         // console.log(result)
-    //         return res.status(status.OK).json({
-    //             code: status.OK,
-    //             message: result
-    //         });
-    //         // res.send(JSON.stringify(result));
-    //     }
-    // })
-
-
+exports.getProfileByEmail = async (email) => {
+    try {
+        let result = await USER.findOne({ email: { $regex: '.*' + email + '.*' } })
+        return result
+    } catch (error) {
+        throw error
+    }
+}

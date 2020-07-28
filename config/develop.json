@@ -22,13 +22,16 @@
         },
         {
           "url": "http://localhost:3000/v1"
+        },
+        {
+          "url": "https://node-shopadmin.herokuapp.com/v1"
         }
       ]
     },
-    "apis": ["./swagger/swagger.yml"]
+    "apis": ["./swagger/swagger.yaml"]
   },
   "swaggerPath": {
-    "swagger": "./swagger/swagger.yml",
+    "swagger": "./swagger/swagger.yaml",
     "schema": ""
   }
 }

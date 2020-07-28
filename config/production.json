@@ -28,10 +28,10 @@
         }
       ]
     },
-    "apis": ["./swagger/swagger.yml"]
+    "apis": ["./swagger/swagger.yaml"]
   },
   "swaggerPath": {
-    "swagger": "./swagger/swagger.yml",
+    "swagger": "./swagger/swagger.yaml",
     "schema": ""
   }
 }
