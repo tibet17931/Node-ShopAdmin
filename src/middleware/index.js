@@ -1,5 +1,7 @@
 const jwt = require('jsonwebtoken')
 const status = require('http-status');
+const multer = require('multer')
+const path = require('path')
 
 exports.requireJWTAuth = (req, res, next) => {
     try {
@@ -15,3 +17,30 @@ exports.requireJWTAuth = (req, res, next) => {
         })
     }
 }
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => {
+        console.log("XXXXXXXXXXXXXXXXXXXXXx")
+        cb(null, './public/');
+    },
+    filename: (req, file, cb) => {
+        console.log("XXXXXXXXXXXXXXXXXXXXXx")
+        const fileName = file.originalname.toLowerCase().split(' ').join('-');
+        cb(null, fileName)
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    fileFilter: (req, file, cb) => {
+        console.log("XXXXXXXXXXXXXXXXXXXXXx")
+        if (file.mimetype == "image/png" || file.mimetype == "image/jpg" || file.mimetype == "image/jpeg" || file.mimetype == "image/gif") {
+            cb(null, true);
+        } else {
+            cb(null, false);
+            return cb(new Error('Allowed only .png, .jpg, .jpeg and .gif'));
+        }
+    }
+});
+
+exports.upload = upload

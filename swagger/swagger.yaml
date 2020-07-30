@@ -58,7 +58,7 @@ path:
       summary: Registor user
       requestBody:
         content:
-          application/json:
+          multipart/form-data:
             schema:
               type: object
               required:
@@ -103,6 +103,9 @@ path:
                   maxLength: 12
                   description: Mobile Phone
                   example: "083-234-5678"
+                avatar:
+                  type: string
+                  format: binary
       responses:
         200:
           # $ref: "#/components/responses/Success200"

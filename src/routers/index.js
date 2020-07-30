@@ -1,6 +1,9 @@
 
 const router = require('express').Router();
 const { requireJWTAuth } = require('../middleware')
+const { upload } = require('../middleware')
+var multer = require('multer')
+// var upload = multer({ dest: 'uploads/' })
 
 //Controllers
 const User = require('../controllers/user.controller');
