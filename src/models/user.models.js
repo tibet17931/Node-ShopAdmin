@@ -58,3 +58,16 @@ exports.getProfileByEmail = async (email) => {
         throw error
     }
 }
+
+exports.getProfileByUsername = async (username) => {
+    try {
+        let result = await USER.findOne({ username: username })
+        return result
+    } catch (error) {
+        throw error
+    }
+}
+
+
+
+exports.USER = USER

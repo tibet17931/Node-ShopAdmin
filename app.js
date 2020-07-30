@@ -7,12 +7,13 @@ const mongoose = require("mongoose");
 const path = require('path');
 const clog = require('clog');
 const http = require('http');
+const status = require('http-status');
 require('dotenv').config()
 const config = require('config')
 const PORT = process.env.PORT
 
 // คำสั่งเชื่อม MongoDB Atlas
-var mongo_uri = "mongodb+srv://admin:9B70df4910@cluster0.8hmsb.mongodb.net/ShopAdmin?retryWrites=true&w=majority";
+var mongo_uri = process.env.MONGO;
 mongoose.Promise = global.Promise;
 mongoose.connect(mongo_uri, { useNewUrlParser: true, useFindAndModify: false, useCreateIndex: true, useUnifiedTopology: true }).then(
     () => {
@@ -30,8 +31,6 @@ const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
-
-
 
 
 const options = config.get('swaggerConfig')
@@ -53,7 +52,7 @@ new OpenApiValidator({
         //  Create an Express error handler
         app.use((err, req, res, next) => {
             //  Customize errors
-            console.error(err); // dump error to console for debug
+            clog.error(err.toString()); // dump error to console for debug
             res.status(err.status || 500).json({
                 message: err.message,
                 errors: err.errors,
@@ -62,9 +61,3 @@ new OpenApiValidator({
 
         http.createServer(app).listen(PORT, () => clog.info(`http://localhost:${PORT}/api-docs`));
     });
-
-
-
-
-
-// app.listen(3000);

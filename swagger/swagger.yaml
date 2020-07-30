@@ -6,18 +6,31 @@ tags:
 path:
   /login:
     post:
-      security:
-        - bearerAuth: []
       tags:
         - Auth
       summary: Get greeting message from TheCodebuzz
-      parameters:
-        - name: username
-          in: query
-          description: The user name for login
-          required: true
-          schema:
-            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  minLength: 8
+                  maxLength: 50
+                  description: User ID String min 8
+                  example: "yeenEiEi"
+                password:
+                  type: string
+                  minLength: 8
+                  maxLength: 15
+                  writeOnly: true
+                  description: Password is a Secret
+                  example: "************"
       responses:
         200:
           # $ref: "#/components/responses/Success200"
@@ -50,6 +63,10 @@ path:
               type: object
               required:
                 - username
+                - password
+                - email
+                - birthday
+                - phone
               properties:
                 username:
                   type: string
@@ -140,6 +157,8 @@ path:
                     type: object
         400:
           $ref: "#/components/responses/BadRequest"
+        401:
+          $ref: "#/components/responses/Unauthorized"
 components:
   schemas:
     $ref: "swagger/schemas.yaml"
