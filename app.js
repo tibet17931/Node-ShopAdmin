@@ -32,7 +32,9 @@ app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
 
+var dir = path.join(__dirname, 'uploads');
 
+app.use(Express.static(dir));
 
 const options = config.get('swaggerConfig')
 

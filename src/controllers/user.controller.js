@@ -4,6 +4,7 @@ const { calculate_age, hashPassword, isPasswordCorrect } = require('../helpers')
 const clog = require('clog')
 const jwt = require('jsonwebtoken')
 const fs = require('fs');
+const sharp = require('sharp')
 
 exports.login = async (req, res) => {
     let fn = `[POST] /Login`
@@ -45,28 +46,44 @@ exports.login = async (req, res) => {
 exports.registor = async (req, res, next) => {
     let fn = `[POST] /Registor`
     try {
-        // console.log(req.files[0].buffer)
-        fs.writeFileSync('/uploads', 'Hey there!')
-        // let body = req.body;
-        // let hash = hashPassword(body.password)
-        // let obj = {
-        //     username: body.username,
-        //     password_hash: hash.hash,
-        //     password_salt: hash.salt,
-        //     firstname: body.firstname,
-        //     lastname: body.lastname,
-        //     email: body.email,
-        //     birthday: new Date(body.birthday),
-        //     phone: body.phone,
-        //     age: calculate_age(new Date(body.birthday)),
-        // }
-        // clog.info(`obj : ${JSON.stringify(obj)}`)
-        // let result = await UserModel.registerModel(obj)
-        // clog.info(`result : ${JSON.stringify(result)}`)
-        // return res.status(status.OK).json({
-        //     code: status.OK,
-        //     message: result
-        // })
+        let body = req.body;
+        console.log(req.files[0].mimetype)
+        if (req.files[0] && (req.files[0].mimetype !== 'image/png' && req.files[0].mimetype !== 'image/jpeg')) {
+            return res.status(status.BAD_REQUEST).json({
+                code: status.BAD_REQUEST,
+                message: `${fn} Avatar need file JPEG or PNG`
+            })
+        }
+        let filename;
+        if (req.files[0]) {
+            filename = Date.now()
+        }
+        let hash = hashPassword(body.password)
+        let obj = {
+            username: body.username,
+            password_hash: hash.hash,
+            password_salt: hash.salt,
+            firstname: body.firstname,
+            avatar: filename ? 'resize_' + filename + '.png' : 'default.png',
+            lastname: body.lastname,
+            email: body.email,
+            birthday: new Date(body.birthday),
+            phone: body.phone,
+            age: calculate_age(new Date(body.birthday)),
+        }
+        clog.info(`obj : ${JSON.stringify(obj)}`)
+        let result = await UserModel.registerModel(obj)
+        clog.info(`result : ${JSON.stringify(result)}`)
+        if (req.files[0]) {
+            await fs.writeFileSync(`uploads/${filename}.png`, req.files[0].buffer)
+            await sharp(`uploads/${filename}.png`)
+                .resize({ width: 500, height: 500 }).toFile(`uploads/resize_${filename}.png`)
+            await fs.unlinkSync(`uploads/${filename}.png`)
+        }
+        return res.status(status.OK).json({
+            code: status.OK,
+            message: result
+        })
     } catch (error) {
         return res.status(status.BAD_REQUEST).json({
             code: status.BAD_REQUEST,
