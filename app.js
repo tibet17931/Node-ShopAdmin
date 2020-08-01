@@ -6,6 +6,7 @@ const bodyParser = require('body-parser');
 const mongoose = require("mongoose");
 const path = require('path');
 const clog = require('clog');
+const cors = require('cors')
 const http = require('http');
 const status = require('http-status');
 require('dotenv').config()
@@ -27,7 +28,7 @@ mongoose.connect(mongo_uri, { useNewUrlParser: true, useFindAndModify: false, us
 
 const OpenApiValidator = require('express-openapi-validator').OpenApiValidator;
 
-
+app.use(cors())
 app.use(bodyParser.json());
 app.use(bodyParser.text());
 app.use(bodyParser.urlencoded({ extended: false }));
