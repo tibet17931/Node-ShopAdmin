@@ -27,3 +27,16 @@ Error:
     message:
       type: string
       description: Error message
+Warning:
+  type: object
+  required:
+    - code
+    - message
+  properties:
+    code:
+      type: number
+      example: 205
+      description: HTTP reponse code
+    message:
+      type: string
+      description: Warning message

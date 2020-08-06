@@ -15,12 +15,8 @@ const userSchema = new Schema({
     birthday: { type: Date, required: true },
     phone: {
         type: String,
-        validate: {
-            validator: function (v) {
-                return /\d{3}-\d{3}-\d{4}/.test(v);
-            },
-            message: props => `${props.value} is not a valid phone number!`
-        },
+        min: 10,
+        max: 10,
         required: [true, 'User phone number required'],
         unique: true
     },
@@ -44,6 +40,7 @@ exports.findUserById = async (id) => {
 exports.registerModel = async (obj) => {
     try {
         let saveUser = new USER(obj)
+        console.log(obj)
         let result = await saveUser.save()
         return result
     } catch (error) {

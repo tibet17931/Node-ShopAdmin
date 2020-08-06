@@ -8,9 +8,9 @@ const path = require('path');
 const clog = require('clog');
 const cors = require('cors')
 const http = require('http');
-const status = require('http-status');
 require('dotenv').config()
 const config = require('config')
+const status = require('http-status');
 const PORT = process.env.PORT
 
 // คำสั่งเชื่อม MongoDB Atlas
@@ -52,12 +52,12 @@ new OpenApiValidator({
 }).install(app)
     .then(() => {
         app.use('/v1', require('./src/routers'));
-
         //  Create an Express error handler
         app.use((err, req, res, next) => {
             //  Customize errors
             clog.error(err.toString()); // dump error to console for debug
-            res.status(err.status || 500).json({
+            res.status(status.BAD_REQUEST).json({
+                code: status.BAD_REQUEST,
                 message: err.message,
                 errors: err.errors,
             });

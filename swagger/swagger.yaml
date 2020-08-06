@@ -51,6 +51,8 @@ path:
                     type: object
         400:
           $ref: "#/components/responses/BadRequest"
+        205:
+          $ref: "#/components/responses/BodyWarning"
   /registor:
     post:
       tags:
@@ -58,7 +60,7 @@ path:
       summary: Registor user
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
               type: object
               required:
@@ -105,7 +107,7 @@ path:
                   example: "083-234-5678"
                 avatar:
                   type: string
-                  format: binary
+                  description: Base64
       responses:
         200:
           # $ref: "#/components/responses/Success200"
@@ -226,3 +228,9 @@ components:
         application/json:
           schema:
             $ref: "#/components/schemas/Success"
+    BodyWarning:
+      description: Warning
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/Warning"

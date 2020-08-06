@@ -5,33 +5,40 @@ const clog = require('clog')
 const jwt = require('jsonwebtoken')
 const fs = require('fs');
 const sharp = require('sharp')
+const isBase64 = require('is-base64');
 
 exports.login = async (req, res) => {
     let fn = `[POST] /Login`
     try {
         let body = req.body;
         let result = await UserModel.getProfileByUsername(body.username)
+        console.log(result)
         if (result) {
             //savedHash, savedSalt
             let checkPassword = isPasswordCorrect(result.password_hash, result.password_salt, body.password)
             if (checkPassword) {
                 let payload = {
+                    id: result._id,
                     sub: req.body.username
                 };
                 let token = jwt.sign(payload, process.env.SECRET, { expiresIn: '30m' })
                 return res.status(status.OK).json({
                     code: status.OK,
-                    message: { token: token }
+                    message: {
+                        fullname: result.firstname + ' ' + result.lastname,
+                        avatar: `http://${req.get('host')}/${result.avatar}`,
+                        token: token
+                    }
                 })
             } else {
-                return res.status(status.FORBIDDEN).json({
-                    code: status.FORBIDDEN,
+                return res.status(status.BAD_REQUEST).json({
+                    code: status.BAD_REQUEST,
                     message: "Password is Worng"
                 })
             }
         } else {
-            return res.status(status.FORBIDDEN).json({
-                code: status.FORBIDDEN,
+            return res.status(status.BAD_REQUEST).json({
+                code: status.BAD_REQUEST,
                 message: "Username is Worng"
             })
         }
@@ -47,16 +54,11 @@ exports.registor = async (req, res, next) => {
     let fn = `[POST] /Registor`
     try {
         let body = req.body;
-        console.log(req.files[0].mimetype)
-        if (req.files[0] && (req.files[0].mimetype !== 'image/png' && req.files[0].mimetype !== 'image/jpeg')) {
-            return res.status(status.BAD_REQUEST).json({
-                code: status.BAD_REQUEST,
-                message: `${fn} Avatar need file JPEG or PNG`
-            })
-        }
         let filename;
-        if (req.files[0]) {
+        if (isBase64(body.avatar, { allowMime: true })) {
             filename = Date.now()
+            let base64Image = body.avatar.split(';base64,').pop();
+            fs.writeFileSync(`uploads/${filename}.png`, base64Image, { encoding: 'base64' })
         }
         let hash = hashPassword(body.password)
         let obj = {
@@ -74,8 +76,7 @@ exports.registor = async (req, res, next) => {
         clog.info(`obj : ${JSON.stringify(obj)}`)
         let result = await UserModel.registerModel(obj)
         clog.info(`result : ${JSON.stringify(result)}`)
-        if (req.files[0]) {
-            await fs.writeFileSync(`uploads/${filename}.png`, req.files[0].buffer)
+        if (body.avatar) {
             await sharp(`uploads/${filename}.png`)
                 .resize({ width: 500, height: 500 }).toFile(`uploads/resize_${filename}.png`)
             await fs.unlinkSync(`uploads/${filename}.png`)
