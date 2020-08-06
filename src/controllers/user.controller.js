@@ -26,7 +26,7 @@ exports.login = async (req, res) => {
                     code: status.OK,
                     message: {
                         fullname: result.firstname + ' ' + result.lastname,
-                        avatar: `http://${req.get('host')}/${result.avatar}`,
+                        avatar: `https://${req.get('host')}/${result.avatar}`,
                         token: token
                     }
                 })
